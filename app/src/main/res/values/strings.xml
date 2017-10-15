@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Jogo do 15</string>
+    <string name="jogar">Jogar</string>
+    <string name="pausar">Pausar</string>
+    <string name="continuar">Continuar</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="b00">0</string>
+    <string name="b01">1</string>
+    <string name="b02">2</string>
+    <string name="b03">3</string>
+    <string name="b04">4</string>
+    <string name="b05">5</string>
+    <string name="b06">6</string>
+    <string name="b07">7</string>
+    <string name="b08">8</string>
+    <string name="b09">9</string>
+    <string name="b10">10</string>
+    <string name="b11">11</string>
+    <string name="b12">12</string>
+    <string name="b13">13</string>
+    <string name="b14">14</string>
+    <string name="b15">15</string>
+</resources>
