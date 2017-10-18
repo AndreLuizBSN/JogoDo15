@@ -1,14 +1,15 @@
 package com.a15game.prince.jogodos15.kernel;
 
-import android.os.Handler;
-import android.support.v7.app.AlertDialog;
-
 import java.util.ArrayList;
 import java.util.Random;
 
 public class GameAction {
 
-    public long contaMovimentos = 0;
+    private long contaMovimentos;
+
+    public GameAction(){
+        this.contaMovimentos = 0;
+    }
 
     //funçao de jogar
     public int[][] jogar(){
@@ -21,18 +22,17 @@ public class GameAction {
         ArrayList<Integer> numerosUsados = new ArrayList<>();
         //variavel que sorteara os numeros para cada botao
         Random rand = new Random();
-        boolean controle = false;
-        int randomNum = 0;
+        int randomNum;
         //for sobre as linhas
         for(int l = 0; l<4; l++){
             //for sobre as colunas
             for(int c = 0; c<4; c++){
                 //sorteio
-                randomNum = rand.nextInt((15 - 0) + 1) + 0;
+                randomNum = rand.nextInt((15) + 1);
                 //caso o numero sorteado ja tenha saido anteriormente
                 while(numerosUsados.contains(randomNum)){
                     //sorteia outra vez
-                    randomNum = rand.nextInt((15 - 0) + 1) + 0;
+                    randomNum = rand.nextInt((15) + 1);
                 }
                 //adiciona o numero aos numeros ja usados
                 numerosUsados.add(randomNum);

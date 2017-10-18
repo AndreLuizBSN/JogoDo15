@@ -1,6 +1,7 @@
 package com.a15game.prince.jogodos15;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Handler;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 import com.a15game.prince.jogodos15.kernel.GameAction;
 import com.a15game.prince.jogodos15.kernel.Util;
 import com.a15game.prince.jogodos15.scores.Score;
+import com.a15game.prince.jogodos15.scores.ScoreActivity;
 import com.a15game.prince.jogodos15.scores.Scores;
 import com.a15game.prince.jogodos15.scores.Status;
 
@@ -42,16 +44,17 @@ public class MainActivity extends AppCompatActivity {
     private Button btn33;
     private Button btnJogar;
     private Button btnCancelar;
+    private Button btnPontuacao;
     private int[][] jogo;
     private AlertDialog alerta;
     private boolean primeiraVez = true;
+    private boolean jogando = false;
     private MediaPlayer mp, gamemusic;
     private long timeGame;
     private TextView txtTimer;
 
     private Handler m_handler;
     private Runnable m_handlerTask;
-    private ListView listPontuacao;
 
     private GameAction gameAction;
     private Scores scores;
@@ -86,8 +89,7 @@ public class MainActivity extends AppCompatActivity {
         btn33 = (Button) findViewById(R.id.btn33);
         btnJogar = (Button) findViewById(R.id.btnJogar);
         btnCancelar = (Button) findViewById(R.id.btnCancelar);
-        listPontuacao = (ListView) findViewById(R.id.listPontuacao);
-        Button btnLimparPontuacao = (Button) findViewById(R.id.btnLimparPontuacao);
+        btnPontuacao = (Button) findViewById(R.id.btnScores);
 
 
         //Inicializar as classes de controle do game e scores
@@ -111,15 +113,13 @@ public class MainActivity extends AppCompatActivity {
         //definir o botão de cancelar como false para não cancelar um jogo não começado
         btnCancelar.setClickable(false);
 
-        /*Montar a lista de pontuaçao*/
-        montarListaPontuacao();
-
         //Botao de inicio do game
         btnJogar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(btnJogar.getText().toString().equals("Jogar")){
                     primeiraVez = false;
+                    jogando = true;
                     //definir o botão de cancelar como true para possa cancelar um jogo começado
                     btnCancelar.setClickable(true);
                     jogo = gameAction.jogar();
@@ -127,9 +127,11 @@ public class MainActivity extends AppCompatActivity {
                     playTimer();
                 }else if(btnJogar.getText().toString().equals("Pausar")){
                     pauseTimer();
+                    jogando = false;
                     System.out.println(gameAction.getMovimentos());
                 }else{
                     atribuir(jogo);
+                    jogando = true;
                     playTimer();
                 }
             }
@@ -144,10 +146,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //Botao de Limpar a poutuação do game
-        btnLimparPontuacao.setOnClickListener(new View.OnClickListener() {
+        btnPontuacao.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                limparPontuacao();
+                Intent intent = new Intent(getApplicationContext(), ScoreActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -285,6 +288,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        System.out.println("onStart");
 
         //define o som do click
         mp = MediaPlayer.create(this, R.raw.clickbuttom);
@@ -298,6 +302,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onRestart() {
+        System.out.println("onRestart");
         super.onRestart();
         gamemusic.start();
 
@@ -306,73 +311,34 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        System.out.println("onStop");
         //define o som do click
         gamemusic.stop();
-        try{
-            pauseTimer();
-        }catch (Exception ignored){
+        if(jogando){
+            try{
+                pauseTimer();
+            }catch (Exception ignored){
 
+            }
+            btnJogar.setText(R.string.continuar);
         }
-        btnJogar.setText(R.string.continuar);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        System.out.println("onPause");
 
         //define o som do click
         gamemusic.stop();
-        try{
-            pauseTimer();
-        }catch (Exception ignored){
+        if(jogando){
+            try{
+                pauseTimer();
+            }catch (Exception ignored){
 
+            }
+            btnJogar.setText(R.string.continuar);
         }
-        btnJogar.setText(R.string.continuar);
-    }
-
-    private void montarListaPontuacao() {
-        ArrayList<Score> scoresList = scores.getScores();
-        ArrayList<String> opcoes = new ArrayList<>();
-        ArrayAdapter<String> adaptador;
-        String dado;
-
-        for(Score score : scoresList){
-            dado = "Cliques: "+String.valueOf(score.getCliques());
-            dado += " | Tempo: "+(util.segInStrTime(score.getTempo()));
-            dado += " | "+String.valueOf(score.getStatus().name());
-            opcoes.add(dado);
-        }
-
-        adaptador = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, opcoes);
-        listPontuacao.setAdapter(adaptador);
-    }
-
-    public void limparPontuacao(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        //define o titulo
-        builder.setTitle("Limpar pontuações antigas");
-        //define a mensagem
-        builder.setMessage("Voce tem certeza que deseja limpar as pontuações antigas? Contara com perda!")
-                //define um botão como positivo
-                .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface arg0, int arg1) {
-
-                        scores.limparScores();
-                        montarListaPontuacao();
-                    }
-                })
-                //define um botão como negativo.
-                .setNegativeButton("Nao", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        //jogar();
-                    }
-                });
-        //cria o AlertDialog
-        alerta = builder.create();
-        //Exibe
-        alerta.show();
-        alerta.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(Color.RED);
-        alerta.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(Color.BLACK);
     }
 
     public void cancelar(){
@@ -613,9 +579,6 @@ public class MainActivity extends AppCompatActivity {
 
         CharSequence text = "Tempo: 0 Seg";
         txtTimer.setText(text);
-
-        //Refresh na lista de pontuação
-        montarListaPontuacao();
 
         btn00.setText(R.string.b01);
         btn01.setText(R.string.b02);

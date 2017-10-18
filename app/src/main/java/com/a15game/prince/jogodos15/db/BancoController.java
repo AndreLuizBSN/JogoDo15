@@ -7,10 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.a15game.prince.jogodos15.scores.Score;
 
-/**
- * Created by prince on 14/10/17.
- */
-
 public class BancoController {
 
     private SQLiteDatabase db;
@@ -67,13 +63,6 @@ public class BancoController {
         }
         db.close();
         return cursor;
-    }
-
-    public void deletaRegistro(int id){
-        String where = DB.getID() + "=" + id;
-        db = banco.getReadableDatabase();
-        db.delete(DB.getTABELA(),where,null);
-        db.close();
     }
 
     public void deletaTodosRegistro(){

@@ -1,8 +1,5 @@
 package com.a15game.prince.jogodos15.db;
 
-/**
- * Created by prince on 14/10/17.
- */
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
